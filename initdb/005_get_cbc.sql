@@ -1,5 +1,6 @@
 CREATE OR REPLACE FUNCTION dataset.get_cbc(
-    _gender SMALLINT DEFAULT NULL
+    _dataset_id INT,
+    _gender SMALLINT DEFAULT NULL   -
 )
 RETURNS JSONB
 LANGUAGE plpgsql
@@ -11,7 +12,8 @@ BEGIN
 SELECT jsonb_agg(to_jsonb(c))
 INTO _result
 FROM dataset.cbc c
-WHERE _gender IS NULL OR c.gender = _gender;
+WHERE c.dataset_id = _dataset_id
+  AND (_gender IS NULL OR c.gender = _gender);
 
 RETURN COALESCE(_result, '[]'::JSONB);
 END;
