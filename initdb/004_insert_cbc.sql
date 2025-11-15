@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION dataset.insert_dataset_with_cbc(
+CREATE OR REPLACE FUNCTION dataset.insert_cbc(
     _name TEXT,
     _data JSONB
 )
@@ -9,12 +9,10 @@ $$
 DECLARE
 _dataset_id INT;
 BEGIN
-WITH ins_meta AS (
+    -- вставка метаданных
 INSERT INTO dataset.dataset_meta(name, type)
 VALUES (_name, 'cbc')
-    RETURNING dataset_id
-    )
-SELECT dataset_id INTO _dataset_id FROM ins_meta;
+    RETURNING dataset_id INTO _dataset_id;
 
 INSERT INTO dataset.cbc(
     dataset_id,
@@ -23,33 +21,33 @@ INSERT INTO dataset.cbc(
     plt, mpv, pct, pdw, sd, sdtsd, tsd,
     ferritin, folate, b12
 )
-VALUES (
-           _dataset_id,
-           (_data->>'gender')::SMALLINT,
-           (_data->>'wbc')::NUMERIC,
-           (_data->>'ne')::NUMERIC,
-           (_data->>'ly')::NUMERIC,
-           (_data->>'mo')::NUMERIC,
-           (_data->>'eo')::NUMERIC,
-           (_data->>'ba')::NUMERIC,
-           (_data->>'rbc')::NUMERIC,
-           (_data->>'hgb')::NUMERIC,
-           (_data->>'hct')::NUMERIC,
-           (_data->>'mcv')::NUMERIC,
-           (_data->>'mch')::NUMERIC,
-           (_data->>'mchc')::NUMERIC,
-           (_data->>'rdw')::NUMERIC,
-           (_data->>'plt')::NUMERIC,
-           (_data->>'mpv')::NUMERIC,
-           (_data->>'pct')::NUMERIC,
-           (_data->>'pdw')::NUMERIC,
-           (_data->>'sd')::NUMERIC,
-           (_data->>'sdtsd')::NUMERIC,
-           (_data->>'tsd')::NUMERIC,
-           (_data->>'ferritin')::NUMERIC,
-           (_data->>'folate')::NUMERIC,
-           (_data->>'b12')::NUMERIC
-       );
+SELECT
+    _dataset_id,
+    (item->>'gender')::SMALLINT,
+        (item->>'wbc')::NUMERIC,
+        (item->>'ne')::NUMERIC,
+        (item->>'ly')::NUMERIC,
+        (item->>'mo')::NUMERIC,
+        (item->>'eo')::NUMERIC,
+        (item->>'ba')::NUMERIC,
+        (item->>'rbc')::NUMERIC,
+        (item->>'hgb')::NUMERIC,
+        (item->>'hct')::NUMERIC,
+        (item->>'mcv')::NUMERIC,
+        (item->>'mch')::NUMERIC,
+        (item->>'mchc')::NUMERIC,
+        (item->>'rdw')::NUMERIC,
+        (item->>'plt')::NUMERIC,
+        (item->>'mpv')::NUMERIC,
+        (item->>'pct')::NUMERIC,
+        (item->>'pdw')::NUMERIC,
+        (item->>'sd')::NUMERIC,
+        (item->>'sdtsd')::NUMERIC,
+        (item->>'tsd')::NUMERIC,
+        (item->>'ferritin')::NUMERIC,
+        (item->>'folate')::NUMERIC,
+        (item->>'b12')::NUMERIC
+FROM jsonb_array_elements(_data) AS item;
 
 RETURN _dataset_id;
 END;
