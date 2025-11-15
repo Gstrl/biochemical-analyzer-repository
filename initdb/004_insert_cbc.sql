@@ -1,18 +1,30 @@
-CREATE OR REPLACE FUNCTION dataset.insert_cbc(
+CREATE OR REPLACE FUNCTION dataset.insert_dataset_with_cbc(
+    _name TEXT,
     _data JSONB
 )
-RETURNS VOID
+RETURNS INT
 LANGUAGE plpgsql
 AS
 $$
+DECLARE
+_dataset_id INT;
 BEGIN
+WITH ins_meta AS (
+INSERT INTO dataset.dataset_meta(name, type)
+VALUES (_name, 'cbc')
+    RETURNING dataset_id
+    )
+SELECT dataset_id INTO _dataset_id FROM ins_meta;
+
 INSERT INTO dataset.cbc(
+    dataset_id,
     gender, wbc, ne, ly, mo, eo, ba,
     rbc, hgb, hct, mcv, mch, mchc, rdw,
     plt, mpv, pct, pdw, sd, sdtsd, tsd,
     ferritin, folate, b12
 )
 VALUES (
+           _dataset_id,
            (_data->>'gender')::SMALLINT,
            (_data->>'wbc')::NUMERIC,
            (_data->>'ne')::NUMERIC,
@@ -38,5 +50,7 @@ VALUES (
            (_data->>'folate')::NUMERIC,
            (_data->>'b12')::NUMERIC
        );
+
+RETURN _dataset_id;
 END;
 $$;
