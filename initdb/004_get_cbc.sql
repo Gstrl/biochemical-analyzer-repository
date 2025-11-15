@@ -1,0 +1,18 @@
+CREATE OR REPLACE FUNCTION dataset.get_cbc(
+    _gender SMALLINT DEFAULT NULL
+)
+RETURNS JSONB
+LANGUAGE plpgsql
+AS
+$$
+DECLARE
+_result JSONB;
+BEGIN
+SELECT jsonb_agg(to_jsonb(c))
+INTO _result
+FROM dataset.cbc c
+WHERE _gender IS NULL OR c.gender = _gender;
+
+RETURN COALESCE(_result, '[]'::JSONB);
+END;
+$$;

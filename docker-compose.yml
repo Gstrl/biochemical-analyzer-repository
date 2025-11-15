@@ -1,0 +1,19 @@
+services:
+  biochemical-analyzer-db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: biochemical-analyzer
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db_data:/var/lib/postgresql/data
+      - ./initdb:/docker-entrypoint-initdb.d
+    networks:
+      - shared
+
+networks:
+  shared:
+    external: true
+    name: shared-network
