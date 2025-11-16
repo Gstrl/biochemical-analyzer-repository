@@ -14,8 +14,10 @@ INSERT INTO dataset.dataset_meta(name, type)
 VALUES (_name, 'cbc')
     RETURNING dataset_id INTO _dataset_id;
 
+-- вставка данных с patient_id
 INSERT INTO dataset.cbc(
     dataset_id,
+    patient_id,  -- добавили
     gender, wbc, ne, ly, mo, eo, ba,
     rbc, hgb, hct, mcv, mch, mchc, rdw,
     plt, mpv, pct, pdw, sd, sdtsd, tsd,
@@ -23,7 +25,8 @@ INSERT INTO dataset.cbc(
 )
 SELECT
     _dataset_id,
-    (item->>'gender')::SMALLINT,
+    (item->>'patient_id')::INT,
+        (item->>'gender')::SMALLINT,
         (item->>'wbc')::NUMERIC,
         (item->>'ne')::NUMERIC,
         (item->>'ly')::NUMERIC,
