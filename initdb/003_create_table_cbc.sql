@@ -1,5 +1,5 @@
 CREATE TABLE dataset.cbc (
-     dataset_id INT NOT NULL REFERENCES dataset.dataset_meta(dataset_id)
+     dataset_id INT NOT NULL REFERENCES dataset.dataset_meta(dataset_id),
      gender     SMALLINT,       -- 1 = Male, 2 = Female
      wbc        NUMERIC,        -- WBC
      ne         NUMERIC,        -- NE#
