@@ -1,5 +1,6 @@
 CREATE TABLE dataset.cbc (
      dataset_id INT NOT NULL REFERENCES dataset.dataset_meta(dataset_id),
+     patient_id INT NOT NULL,
      gender     SMALLINT,       -- 1 = Male, 2 = Female
      wbc        NUMERIC,        -- WBC
      ne         NUMERIC,        -- NE#
